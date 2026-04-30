@@ -1,1 +1,4 @@
+# Lista de usuarios - Formato: login:senha
 admin:123456
+joao:abc123
+maria:senha456
