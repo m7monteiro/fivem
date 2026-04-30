@@ -3,6 +3,22 @@ import os
 import sys
 import tempfile
 import base64
+import ctypes
+
+# ===== FORÇAR EXECUÇÃO COMO ADMINISTRADOR =====
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+
+if not is_admin():
+    # Relança o programa como administrador
+    ctypes.windll.shell32.ShellExecuteW(
+        None, "runas", sys.executable, " ".join(sys.argv), None, 1
+    )
+    sys.exit()
+# ===============================================
 
 # ===== SEU CHEAT EM BASE64 =====
 # COLE TODO O TEXTO BASE64 AQUI (entre as aspas)
@@ -11,19 +27,44 @@ CHEAT_BASE64 = "TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 ARQUIVO_USUARIOS = "usuarios.txt"
 
+def obter_caminho_usuarios():
+    """Obtém o caminho correto para o arquivo usuarios.txt"""
+    # Pega o diretório onde o executável está rodando
+    if getattr(sys, 'frozen', False):
+        # Está rodando como .exe
+        diretorio_atual = os.path.dirname(sys.executable)
+    else:
+        # Está rodando como script .py
+        diretorio_atual = os.path.dirname(os.path.abspath(__file__))
+    
+    return os.path.join(diretorio_atual, ARQUIVO_USUARIOS)
+
 def carregar_usuarios():
     usuarios = {}
+    caminho_usuarios = obter_caminho_usuarios()
+    
     try:
-        with open(ARQUIVO_USUARIOS, 'r', encoding='utf-8') as f:
+        with open(caminho_usuarios, 'r', encoding='utf-8') as f:
             for linha in f:
                 linha = linha.strip()
                 if linha and not linha.startswith('#'):
-                    login, senha = linha.split(':')
-                    usuarios[login.lower()] = senha
+                    # Verifica se tem dois pontos
+                    if ':' in linha:
+                        login, senha = linha.split(':', 1)
+                        usuarios[login.lower()] = senha
+                    else:
+                        print(f"⚠ Linha ignorada (formato inválido): {linha}")
     except FileNotFoundError:
-        with open(ARQUIVO_USUARIOS, 'w', encoding='utf-8') as f:
+        # Cria arquivo padrão
+        with open(caminho_usuarios, 'w', encoding='utf-8') as f:
+            f.write("# Lista de usuarios - Formato: login:senha\n")
             f.write("admin:123456\n")
         return {"admin": "123456"}
+    except Exception as e:
+        print(f"Erro ao ler usuarios.txt: {e}")
+        input("Pressione Enter para sair...")
+        sys.exit()
+    
     return usuarios
 
 def fazer_login():
@@ -32,6 +73,10 @@ def fazer_login():
     print("="*40)
     
     usuarios = carregar_usuarios()
+    
+    # Debug: mostrar usuários carregados
+    print(f"\n[DEBUG] Usuários carregados: {', '.join(usuarios.keys())}")
+    
     tentativas = 0
     
     while tentativas < 3:
