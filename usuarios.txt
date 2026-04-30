@@ -2,3 +2,4 @@
 admin:123456
 joao:abc123
 maria:senha456
+felipe:123456
