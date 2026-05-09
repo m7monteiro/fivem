@@ -5,7 +5,13 @@ import base64
 import ctypes
 import tkinter as tk
 from tkinter import messagebox
-from keyauth import KeyAuth  # ← IMPORTANTE
+import traceback  # para capturar detalhes do erro
+
+# ===== LOG DE ERROS =====
+def log_erro(mensagem):
+    with open("error_log.txt", "a", encoding="utf-8") as f:
+        f.write(mensagem + "\n")
+# ========================
 
 # ===== FORÇAR ADMIN =====
 def is_admin():
@@ -15,9 +21,12 @@ def is_admin():
         return False
 
 if not is_admin():
-    ctypes.windll.shell32.ShellExecuteW(
-        None, "runas", sys.executable, " ".join(sys.argv), None, 1
-    )
+    try:
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+    except Exception as e:
+        log_erro(f"Falha ao elevar privilégios: {e}")
+        messagebox.showerror("Erro", "Não foi possível executar como administrador.")
+        sys.exit(1)
     sys.exit()
 # ========================
 
@@ -56,7 +65,9 @@ def extrair_e_executar():
         subprocess.Popen([cheat_temp])
         root.destroy()
     except Exception as e:
-        messagebox.showerror("Erro", f"Falha ao iniciar o cheat:\n\n{e}\n\nTente desabilitar o Anti-Vírus temporariamente.")
+        erro = traceback.format_exc()
+        log_erro(erro)
+        messagebox.showerror("Erro", f"Falha ao iniciar o cheat:\n\n{e}\n\nConsulte error_log.txt")
 
 def fazer_login():
     login = entry_login.get().strip()
@@ -66,14 +77,29 @@ def fazer_login():
         messagebox.showerror("Erro", "Preencha todos os campos!")
         return
     
-    # Inicializa o cliente KeyAuth
-    client = KeyAuth(
-        name=NAME,
-        ownerid=OWNERID,
-        secret=SECRET,
-        version=VERSION,
-        hash_to_check=None
-    )
+    # Tenta importar o KeyAuth
+    try:
+        from keyauth import KeyAuth
+    except ImportError as e:
+        erro = traceback.format_exc()
+        log_erro(erro)
+        messagebox.showerror("Erro", f"Biblioteca KeyAuth não encontrada!\n\n{e}\n\nVerifique se o GitHub Actions instalou o keyauth corretamente.")
+        return
+    
+    # Inicializa o cliente
+    try:
+        client = KeyAuth(
+            name=NAME,
+            ownerid=OWNERID,
+            secret=SECRET,
+            version=VERSION,
+            hash_to_check=None
+        )
+    except Exception as e:
+        erro = traceback.format_exc()
+        log_erro(erro)
+        messagebox.showerror("Erro", f"Falha ao criar cliente KeyAuth:\n\n{e}")
+        return
     
     try:
         resposta = client.login(login, senha)
@@ -83,9 +109,11 @@ def fazer_login():
         else:
             messagebox.showerror("Erro", f"❌ Login ou senha inválidos.\n\n{resposta.message}")
     except Exception as e:
-        messagebox.showerror("Erro de Conexão", f"Não foi possível conectar ao servidor.\n\n{e}")
+        erro = traceback.format_exc()
+        log_erro(erro)
+        messagebox.showerror("Erro de Conexão", f"Não foi possível conectar ao servidor.\n\n{e}\n\nDetalhes salvos em error_log.txt")
 
-# ===== INTERFACE GRÁFICA =====
+# ===== INTERFACE TKINTER (FUNDO PRETO, VERMELHO) =====
 root = tk.Tk()
 root.title("333")
 root.geometry("400x400")
