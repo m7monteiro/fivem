@@ -20,6 +20,9 @@ jobs:
     - name: Install PyInstaller
       run: pip install pyinstaller
 
+    - name: Install KeyAuth
+      run: pip install keyauth
+
     - name: Build EXE
       run: pyinstaller --onefile --console launcher.py
 
