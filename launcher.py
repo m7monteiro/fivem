@@ -88,26 +88,18 @@ root.configure(bg="black")
 root.resizable(False, False)
 root.eval('tk::PlaceWindow . center')
 
-# Frame principal
 main_frame = tk.Frame(root, bg="black")
 main_frame.pack(expand=True, fill="both", padx=25, pady=20)
 
-# Título "333" com efeito de tamanhos diferentes
-frame_333 = tk.Frame(main_frame, bg="black")
-frame_333.pack(pady=(10, 5))
+# "333" grande vermelho
+titulo = tk.Label(main_frame, text="333", font=("Impact", 80, "bold"), fg="red", bg="black")
+titulo.pack(pady=(10, 5))
 
-num1 = tk.Label(frame_333, text="3", font=("Impact", 50, "bold"), fg="red", bg="black")
-num1.pack(side="left", padx=3)
-num2 = tk.Label(frame_333, text="3", font=("Impact", 80, "bold"), fg="#ff1a1a", bg="black")
-num2.pack(side="left", padx=5)
-num3 = tk.Label(frame_333, text="3", font=("Impact", 50, "bold"), fg="red", bg="black")
-num3.pack(side="left", padx=3)
-
-# Linha decorativa (mais fina)
+# Linha decorativa
 linha = tk.Frame(main_frame, height=1, bg="darkred")
 linha.pack(fill="x", pady=10)
 
-# Campos mais compactos
+# Campos de login
 label_login = tk.Label(main_frame, text="LOGIN", font=("Arial", 10, "bold"), fg="darkred", bg="black")
 label_login.pack(anchor="w", pady=(10, 0))
 entry_login = tk.Entry(main_frame, font=("Arial", 11), bg="#1a1a1a", fg="red", insertbackground="red",
@@ -122,14 +114,14 @@ entry_senha = tk.Entry(main_frame, font=("Arial", 11), bg="#1a1a1a", fg="red", s
 entry_senha.pack(fill="x", pady=(2, 20))
 entry_senha.bind("<Return>", lambda e: fazer_login())
 
-# Botão ENTRAR (menor)
+# Botão ENTRAR
 btn = tk.Button(main_frame, text="ENTRAR", font=("Arial", 10, "bold"), bg="red", fg="black",
                 activebackground="#8b0000", activeforeground="white", relief="flat",
                 command=fazer_login)
 btn.pack(pady=5, ipadx=15, ipady=3)
 
-# Rodapé
-footer = tk.Label(main_frame, text="M7STORE 2026", font=("Arial", 8, "italic"), fg="#330000", bg="black")
+# Rodapé com símbolo de copyright
+footer = tk.Label(main_frame, text="© M7STORE 2026", font=("Arial", 8, "italic"), fg="#330000", bg="black")
 footer.pack(side="bottom", pady=(15, 0))
 
 root.mainloop()
