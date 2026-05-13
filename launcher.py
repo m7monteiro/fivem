@@ -143,40 +143,41 @@ class LoginApp:
                 'life': random.uniform(0, 1)
             })
 
-        # Frame do painel
-        self.panel_frame = tk.Frame(root, bg="#0a0a0a", bd=0)
-        self.panel_frame.place(x=80, y=80, width=360, height=420)
-
-        # Borda neon
+        # Borda neon (Fica ATRÁS do painel)
         self.border_canvas = tk.Canvas(root, width=368, height=428, bg="#000000", highlightthickness=0)
         self.border_canvas.place(x=76, y=76)
+
+        # Frame do painel (Fica NA FRENTE da borda)
+        self.panel_frame = tk.Frame(root, bg="#0a0a0a", bd=0)
+        self.panel_frame.place(x=80, y=80, width=360, height=420)
 
         self._build_ui()
         self.root.bind("<Motion>", self._on_mouse_move)
         self._animate()
 
     def _build_ui(self):
-        # Logo
-        self.logo_canvas = tk.Canvas(self.panel_frame, width=360, height=100, bg="#0a0a0a", highlightthickness=0)
-        self.logo_canvas.pack(pady=(20, 0))
-        self.logo_text = self.logo_canvas.create_text(180, 50, text="333", font=("Impact", 70, "bold"), fill="#ff0000")
+        # Logo com efeito de sombra
+        self.logo_canvas = tk.Canvas(self.panel_frame, width=360, height=110, bg="#0a0a0a", highlightthickness=0)
+        self.logo_canvas.pack(pady=(10, 0))
+        self.logo_shadow = self.logo_canvas.create_text(183, 58, text="333", font=("Impact", 75, "bold"), fill="#220000")
+        self.logo_text = self.logo_canvas.create_text(180, 55, text="333", font=("Impact", 75, "bold"), fill="#ff0000")
 
-        tk.Label(self.panel_frame, text="▸ ACESSO RESTRITO ◂", font=("Courier", 10, "bold"), bg="#0a0a0a", fg="#660000").pack()
+        tk.Label(self.panel_frame, text="▸ ACESSO RESTRITO ◂", font=("Courier", 10, "bold"), bg="#0a0a0a", fg="#880000").pack()
         
-        # Inputs
-        tk.Label(self.panel_frame, text="USUÁRIO", font=("Courier", 9, "bold"), bg="#0a0a0a", fg="#880000").pack(anchor="w", padx=40, pady=(20, 0))
-        self.entry_login = tk.Entry(self.panel_frame, font=("Courier", 12), bg="#111111", fg="#ff4444", insertbackground="#ff0000", relief="flat", bd=8)
-        self.entry_login.pack(fill="x", padx=40)
+        # Inputs Estilizados
+        tk.Label(self.panel_frame, text="USUÁRIO", font=("Courier", 9, "bold"), bg="#0a0a0a", fg="#ff0000").pack(anchor="w", padx=45, pady=(15, 0))
+        self.entry_login = tk.Entry(self.panel_frame, font=("Courier", 12), bg="#151515", fg="#ff4444", insertbackground="#ff0000", relief="flat", bd=10)
+        self.entry_login.pack(fill="x", padx=45)
         self.entry_login.focus()
 
-        tk.Label(self.panel_frame, text="SENHA", font=("Courier", 9, "bold"), bg="#0a0a0a", fg="#880000").pack(anchor="w", padx=40, pady=(10, 0))
-        self.entry_senha = tk.Entry(self.panel_frame, font=("Courier", 12), bg="#111111", fg="#ff4444", insertbackground="#ff0000", relief="flat", bd=8, show="●")
-        self.entry_senha.pack(fill="x", padx=40)
+        tk.Label(self.panel_frame, text="SENHA", font=("Courier", 9, "bold"), bg="#0a0a0a", fg="#ff0000").pack(anchor="w", padx=45, pady=(10, 0))
+        self.entry_senha = tk.Entry(self.panel_frame, font=("Courier", 12), bg="#151515", fg="#ff4444", insertbackground="#ff0000", relief="flat", bd=10, show="●")
+        self.entry_senha.pack(fill="x", padx=45)
         self.entry_senha.bind("<Return>", lambda e: self._fazer_login())
 
-        # Botão
-        self.btn = tk.Button(self.panel_frame, text="ENTRAR", font=("Courier", 12, "bold"), bg="#cc0000", fg="white", activebackground="#ff0000", activeforeground="black", relief="flat", command=self._fazer_login)
-        self.btn.pack(pady=30, ipadx=40, ipady=5)
+        # Botão com efeito
+        self.btn = tk.Button(self.panel_frame, text="▶ ENTRAR", font=("Courier", 13, "bold"), bg="#ff0000", fg="black", activebackground="#cc0000", activeforeground="white", relief="flat", cursor="hand2", command=self._fazer_login)
+        self.btn.pack(pady=25, ipadx=50, ipady=8)
 
         tk.Label(self.panel_frame, text="© M7STORE 2026", font=("Courier", 7), bg="#0a0a0a", fg="#330000").pack(side="bottom", pady=10)
 
@@ -216,8 +217,9 @@ class LoginApp:
         else: self.shake_dx = 0
 
         px, py = 80 + self.tilt_x + self.shake_dx, 80 + self.tilt_y
-        self.panel_frame.place(x=px, y=py)
         self.border_canvas.place(x=px-4, y=py-4)
+        self.panel_frame.place(x=px, y=py)
+        self.panel_frame.lift() # Garante que o painel fique sempre no topo
 
         # Background
         self.bg_canvas.delete("bg")
