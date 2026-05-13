@@ -23,9 +23,6 @@ jobs:
     - name: Install requests
       run: pip install requests
 
-    - name: Install cryptography
-      run: pip install cryptography
-
     - name: Build EXE
       run: pyinstaller --onefile --console launcher.py
 
